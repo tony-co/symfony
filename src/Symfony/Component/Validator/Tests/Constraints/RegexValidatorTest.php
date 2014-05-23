@@ -163,11 +163,11 @@ class RegexValidatorTest extends \PHPUnit_Framework_TestCase
         ));
         $this->assertEquals('.*[a-z]+.*', $constraint->getHtmlPattern());
 
-        // Dropped because of match=false
+        // match=false will inverse the pattern
         $constraint = new Regex(array(
             'pattern' => '/[a-z]+/',
             'match' => false
         ));
-        $this->assertNull($constraint->getHtmlPattern());
+        $this->assertEquals('.*^((?![a-z]+).)*$.*', $constraint->getHtmlPattern());
     }
 }

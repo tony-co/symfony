@@ -66,27 +66,22 @@ class Regex extends Constraint
      * Example: /^[a-z]+$/ would be converted to [a-z]+
      * However, if options are specified, it cannot be converted
      *
-     * Pattern is also ignored if match=false since the pattern should
-     * then be reversed before application.
-     *
-     * @todo reverse pattern in case match=false as per issue #5307
-     *
      * @link http://dev.w3.org/html5/spec/single-page.html#the-pattern-attribute
      *
      * @return string|null
      */
     private function getNonDelimitedPattern()
     {
-        // If match = false, pattern should not be added to HTML5 validation
-        if (!$this->match) {
-            return;
-        }
-
         if (preg_match('/^(.)(\^?)(.*?)(\$?)\1$/', $this->pattern, $matches)) {
             $delimiter = $matches[1];
             $start     = empty($matches[2]) ? '.*' : '';
             $pattern   = $matches[3];
             $end       = empty($matches[4]) ? '.*' : '';
+
+            // If match is set to false, inverse the pattern
+            if (!$this->match) {
+                $pattern = sprintf("^((?!%s).)*$", $pattern);
+            }
 
             // Unescape the delimiter in pattern
             $pattern = str_replace('\\'.$delimiter, $delimiter, $pattern);
